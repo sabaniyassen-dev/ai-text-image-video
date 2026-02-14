@@ -1,39 +1,117 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>AI Media Intelligence Platform</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Media Intelligence Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { background:#0f172a; color:white; font-family:sans-serif; }
+.card { background:#1e293b; padding:20px; border-radius:12px; margin-bottom:20px; }
+button { padding:8px 16px; border-radius:8px; }
+input, textarea { color:black; }
+</style>
 </head>
-<body>
-  <h1>AI Media Intelligence Platform</h1>
 
-  <h2>Evaluate Text</h2>
-  <textarea id="text" rows="5" cols="50"></textarea><br>
-  <button onclick="evaluate()">Evaluate</button>
+<body class="min-h-screen p-6">
 
-  <pre id="result"></pre>
+<h1 class="text-4xl font-bold mb-8 text-cyan-400 text-center">
+AI Media Intelligence Platform
+</h1>
+
+<div class="max-w-3xl mx-auto">
+
+<!-- TEXT -->
+<div class="card">
+<h2 class="text-xl mb-3">Text Evaluation</h2>
+<textarea id="text" class="w-full p-3 rounded mb-3" rows="5"></textarea>
+<button onclick="evaluateText()" class="bg-cyan-500 hover:bg-cyan-600">
+Evaluate Text
+</button>
+<pre id="text_result" class="mt-4 text-sm"></pre>
+</div>
+
+<!-- IMAGE -->
+<div class="card">
+<h2 class="text-xl mb-3">Image Analysis</h2>
+<input type="file" id="image_file" class="mb-3">
+<button onclick="analyzeImage()" class="bg-purple-500 hover:bg-purple-600">
+Analyze Image
+</button>
+<pre id="image_result" class="mt-4 text-sm"></pre>
+</div>
+
+<!-- VIDEO -->
+<div class="card">
+<h2 class="text-xl mb-3">Video Analysis</h2>
+<input type="file" id="video_file" class="mb-3">
+<button onclick="analyzeVideo()" class="bg-orange-500 hover:bg-orange-600">
+Analyze Video
+</button>
+<pre id="video_result" class="mt-4 text-sm"></pre>
+</div>
+
+</div>
+
+<footer class="mt-10 text-gray-400 text-center text-sm">
+© 2026 Dr. Sameer Baniyassen – All Rights Reserved
+</footer>
 
 <script>
 const API = window.location.origin;
 
-async function evaluate() {
+// TEXT
+async function evaluateText() {
   const res = await fetch(API + "/evaluate", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({ text: document.getElementById("text").value })
   });
   const data = await res.json();
-  document.getElementById("result").textContent =
+  document.getElementById("text_result").textContent =
     "Score: " + data.score + "\n" +
     "Strengths: " + (data.strengths || []).join(", ") + "\n" +
     "Weaknesses: " + (data.weaknesses || []).join(", ");
 }
-</script>
 
-<footer>
-<hr>
-<p>© 2026 Dr. Sameer Baniyassen – All Rights Reserved</p>
-</footer>
+// IMAGE
+async function analyzeImage() {
+  const file = document.getElementById("image_file").files[0];
+  if (!file) return alert("Select image first");
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(API + "/analyze-image", {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+  document.getElementById("image_result").textContent =
+    "Score: " + data.score + "\n" +
+    "Analysis: " + data.analysis;
+}
+
+// VIDEO
+async function analyzeVideo() {
+  const file = document.getElementById("video_file").files[0];
+  if (!file) return alert("Select video first");
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(API + "/analyze-video", {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+  document.getElementById("video_result").textContent =
+    "Score: " + data.score + "\n" +
+    "Analysis: " + data.analysis;
+}
+</script>
 
 </body>
 </html>
