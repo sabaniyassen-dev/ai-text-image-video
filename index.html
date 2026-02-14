@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AI Media Intelligence Platform</title>
+</head>
+<body>
+  <h1>AI Media Intelligence Platform</h1>
+
+  <h2>Evaluate Text</h2>
+  <textarea id="text" rows="5" cols="50"></textarea><br>
+  <button onclick="evaluate()">Evaluate</button>
+
+  <pre id="result"></pre>
+
+<script>
+const API = window.location.origin;
+
+async function evaluate() {
+  const res = await fetch(API + "/evaluate", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ text: document.getElementById("text").value })
+  });
+  const data = await res.json();
+  document.getElementById("result").textContent =
+    "Score: " + data.score + "\n" +
+    "Strengths: " + (data.strengths || []).join(", ") + "\n" +
+    "Weaknesses: " + (data.weaknesses || []).join(", ");
+}
+</script>
+
+<footer>
+<hr>
+<p>© 2026 Dr. Sameer Baniyassen – All Rights Reserved</p>
+</footer>
+
+</body>
+</html>
